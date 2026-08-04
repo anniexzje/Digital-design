@@ -1,1 +1,1 @@
-Day la project lien quan den HDL/systemverilog lien quan den thiet ke so va RTL.
+Day la project lien quan den HDL/systemverilog ve thiet ke so va RTL.
