@@ -32,3 +32,6 @@ initial begin
 end
 endmodule
 
+//=================================================================//
+//Ban co the thay the barrelshifterLSR thanh LSL hoac ASL de test va hay doi shhift bit cua y expected//
+// Day la testbench vi du //
