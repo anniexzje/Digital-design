@@ -1,3 +1,5 @@
+// Day la testbench cua SRA //
+// Truong hop dac biet FFFFFFFFF dich van la FFFFFFFFF//
 module shifter_tb();
 logic [31:0]d;
 logic [4:0]shamt;
