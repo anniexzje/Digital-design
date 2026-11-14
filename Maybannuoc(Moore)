@@ -1,0 +1,86 @@
+module maybannuoc(input logic nickel,dime,quarter,
+                  input logic clk,rst,
+                  output logic dispense, returnnickel,returndime,returntwodime);
+  typedef enum logic [3:0] {s0,s5,s10,s15,s20,s25,s30,s35,s40,s45} statetype;
+  statetype state,nextstate;
+  always_ff @(posedge clk, posedge rst)
+    if(rst) state <=s0;
+  else state <=nextstate;
+  
+  always_comb begin
+    nextstate = state;
+    case(state) 
+      s0 : begin
+      if(nickel) nextstate = s5;
+      else if(dime) nextstate = s10;
+      else if(quarter) nextstate = s25;
+    end
+      s5 : begin
+        if(nickel) nextstate = s10;
+        else if(dime) nextstate = s15;
+        else if(quarter) nextstate = s30;
+      end
+      s10 : begin
+        if(nickel) nextstate = s15;
+        else if(dime) nextstate = s20;
+        else if(quarter) nextstate = s35;
+      end
+      s15 : begin
+        if(nickel) nextstate = s20;
+        else if(dime) nextstate = s25;
+        else if(quarter) nextstate = s40;
+      end
+      s20 : begin
+        if(nickel) nextstate = s25;
+        else if(dime) nextstate = s30;
+        else if(quarter) nextstate = s45;
+      end
+      s30 : nextstate = s0;
+      s35 : nextstate = s0;
+      s40 : nextstate = s0;
+      s45 : nextstate = s0;
+      default : nextstate = s0;
+    endcase
+  end
+  
+  always_comb
+    case(state)
+      s25 : begin
+        dispense = 1'b1;
+        returnnickel =1'b0;
+        returndime = 1'b0;
+        returntwodime = 1'b0;
+      end
+      s30 : begin
+        dispense = 1'b1;
+        returnnickel =1'b1;
+        returndime = 1'b0;
+        returntwodime =1'b0;
+      end
+      s35 : begin
+        dispense = 1'b1;
+        returnnickel =1'b0;
+        returndime = 1'b1;
+        returntwodime = 1'b0;
+      end
+      s40 : begin
+        dispense = 1'b1;
+        returnnickel =1'b1;
+        returndime = 1'b1;
+        returntwodime =1'b0;
+      end
+      s45 : begin
+        dispense = 1'b1;
+        returnnickel=1'b0;
+        returndime = 1'b0;
+        returntwodime=1'b1;
+      end
+      default : begin
+        dispense = 1'b0;
+        returnnickel = 1'b0;
+        returndime = 1'b0;
+        returntwodime = 1'b0;
+      end
+        endcase
+        endmodule
+#Đây là máy MOORE.
