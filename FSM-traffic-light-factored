@@ -1,0 +1,66 @@
+module modetraffic (
+    input  logic p, r, clk, rst,
+    output logic m
+);
+    typedef enum logic {s0, s1} statetype;
+    statetype state, nextstate;
+
+    always_ff @(posedge clk, posedge rst)
+        if (rst) state <= s0;
+        else     state <= nextstate;
+
+    always_comb
+        case (state)
+            s0:      nextstate = (p) ? s1 : s0;
+            s1:      nextstate = (r) ? s0 : s1;
+            default: nextstate = s0;
+        endcase
+
+    assign m = (state == s1);
+endmodule
+
+module trafficlight (
+    input  logic       clk, rst,
+    input  logic       ta, tb, m,
+    output logic [1:0] la, lb
+);
+    typedef enum logic [1:0] {s0, s1, s2, s3} statetype;
+    statetype state, nextstate;
+
+    localparam logic [1:0] RED    = 2'b00;
+    localparam logic [1:0] YELLOW = 2'b01;
+    localparam logic [1:0] GREEN  = 2'b10;
+
+    always_ff @(posedge clk, posedge rst)
+        if (rst) state <= s0;
+        else     state <= nextstate;
+
+    always_comb
+        case (state)
+            s0:      nextstate = (~ta) ? s1 : s0;
+            s1:      nextstate = s2;
+            s2:      nextstate = (~m & ~tb) ? s3 : s2;
+            s3:      nextstate = s0;
+            default: nextstate = s0;
+        endcase
+
+    always_comb
+        case (state)
+            s0:      begin la = GREEN;  lb = RED;    end
+            s1:      begin la = YELLOW; lb = RED;    end
+            s2:      begin la = RED;    lb = GREEN;  end
+            s3:      begin la = RED;    lb = YELLOW; end
+            default: begin la = GREEN;  lb = RED;    end
+        endcase
+endmodule
+
+module top_traffic (
+    input  logic       clk, rst,
+    input  logic       ta, tb, p, r,
+    output logic [1:0] la, lb
+);
+    logic m;
+
+    modetraffic  u_mode   (.p(p), .r(r), .clk(clk), .rst(rst), .m(m));
+    trafficlight u_lights (.clk(clk), .rst(rst), .ta(ta), .tb(tb), .m(m), .la(la), .lb(lb));
+endmodule
